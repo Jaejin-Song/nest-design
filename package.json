@@ -13,7 +13,7 @@
     "tsconfig": "*",
     "turbo": "latest"
   },
-  "packageManager": "yarn@1.22.22",
+  "packageManager": "yarn@4.1.1",
   "workspaces": [
     "apps/*",
     "packages/*"
