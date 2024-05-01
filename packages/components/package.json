@@ -28,6 +28,7 @@
     "@tsconfig/node18": "^18.2.2",
     "@types/node": "^20.11.24",
     "@vitejs/plugin-vue": "^5.0.4",
+    "cypress": "^13.8.1",
     "eslint": "^8.57.0",
     "eslint-config-custom": "*",
     "eslint-plugin-storybook": "^0.8.0",
