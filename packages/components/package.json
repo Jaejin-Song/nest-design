@@ -10,7 +10,8 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "chromatic": "npx chromatic --project-token=chpt_3b8d490c846dbcd"
   },
   "dependencies": {
     "vue": "^3.4.21"
@@ -28,6 +29,7 @@
     "@tsconfig/node18": "^18.2.2",
     "@types/node": "^20.11.24",
     "@vitejs/plugin-vue": "^5.0.4",
+    "chromatic": "^11.3.0",
     "cypress": "^13.8.1",
     "eslint": "^8.57.0",
     "eslint-config-custom": "*",
