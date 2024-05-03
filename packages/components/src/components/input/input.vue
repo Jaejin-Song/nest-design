@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue';
-import { useMask } from './useMask';
+import { useMask } from './use-mask';
 import type { InputType } from './type';
 
 export interface Props {
