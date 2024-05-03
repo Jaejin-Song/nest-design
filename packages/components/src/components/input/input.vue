@@ -146,8 +146,7 @@ const blur = () => {
 
 const select = () => inputRef.value !== void 0 && inputRef.value.select();
 
-// 필요하면 오픈함
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- 필요하면 추후에 오픈함
 const nativeEl = () => inputRef.value;
 
 const onFocus = (e: FocusEvent) => {
