@@ -99,7 +99,7 @@ export const useMask = (
   watch(
     () => props.mask,
     (v) => {
-      if (v !== void 0) {
+      if (v !== undefined) {
         updateMaskValue(String(innerValue.value), true);
       }
     },
@@ -118,20 +118,20 @@ export const useMask = (
   }
 
   function updateMaskInternals() {
-    if (props.mask === void 0) {
+    if (props.mask === undefined) {
       hasMask.value === false;
       return;
     }
     hasMask.value = props.mask.length !== 0 && getIsTypeText();
 
     if (hasMask.value === false) {
-      computedUnmask = void 0;
+      computedUnmask = undefined;
 
       return;
     }
 
     const localComputedMask =
-        NAMED_MASKS[props.mask] === void 0
+        NAMED_MASKS[props.mask] === undefined
           ? props.mask
           : NAMED_MASKS[props.mask],
       fillChar =
@@ -147,18 +147,18 @@ export const useMask = (
       negateChar = '';
 
     localComputedMask.replace(tokenRegexMask, (_, char1, esc, token, char2) => {
-      if (token !== void 0) {
+      if (token !== undefined) {
         const c = TOKENS[token];
         mask.push(c);
         negateChar = c.negate;
 
         extract.push('(?:' + negateChar + '+)?(' + c.pattern + ')?');
-      } else if (esc !== void 0) {
+      } else if (esc !== undefined) {
         unmaskChar = '\\' + (esc === '\\' ? '' : esc);
         mask.push(esc);
         unmask.push('([^' + unmaskChar + ']+)?' + unmaskChar + '?');
       } else {
-        const c = char1 !== void 0 ? char1 : char2;
+        const c = char1 !== undefined ? char1 : char2;
         unmaskChar = c === '\\' ? '\\\\\\\\' : c.replace(escRegex, '\\\\$&');
         mask.push(c);
         unmask.push('([^' + unmaskChar + ']+)?' + unmaskChar + '?');
@@ -230,7 +230,7 @@ export const useMask = (
     inputType?: string,
   ) {
     const inp = inputRef.value;
-    if (inp === void 0) return;
+    if (inp === undefined) return;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const end = inp.selectionEnd ?? 0,
@@ -290,12 +290,12 @@ export const useMask = (
   }
 
   function maskValue(val: undefined | null | string) {
-    if (val === void 0 || val === null || val === '') {
+    if (val === undefined || val === null || val === '') {
       return '';
     }
 
     const mask = computedMask;
-    if (mask === void 0) {
+    if (mask === undefined) {
       return '';
     }
 
@@ -309,9 +309,9 @@ export const useMask = (
       if (typeof maskDef === 'string') {
         output += maskDef;
         valChar === maskDef && valIndex++;
-      } else if (valChar !== void 0 && maskDef.regex.test(valChar)) {
+      } else if (valChar !== undefined && maskDef.regex.test(valChar)) {
         output +=
-          maskDef.transform !== void 0 ? maskDef.transform(valChar) : valChar;
+          maskDef.transform !== undefined ? maskDef.transform(valChar) : valChar;
         valIndex++;
       } else {
         return output;
@@ -322,7 +322,7 @@ export const useMask = (
   }
 
   function unmaskValue(val: string | number): string {
-    if (computedUnmask === void 0) return val.toString();
+    if (computedUnmask === undefined) return val.toString();
 
     if (typeof val === 'number') return computedUnmask(val.toString());
 
@@ -330,7 +330,7 @@ export const useMask = (
   }
 
   function fillWithMask(val: string) {
-    if (maskReplaced === void 0) return val;
+    if (maskReplaced === undefined) return val;
 
     if (maskReplaced.length - val.length <= 0) {
       return val;
@@ -341,7 +341,7 @@ export const useMask = (
 
   function getPaddedMaskMarked(size: number) {
     // 타입가드를 위한 예외처리지만 ''을 return하는게 올바른 액션은 아님.
-    if (maskMarked === void 0) return '';
+    if (maskMarked === undefined) return '';
 
     if (size < maskMarked.length) {
       return maskMarked.slice(-size);
@@ -365,7 +365,7 @@ export const useMask = (
 
   const moveCursor = {
     left(inp: HTMLInputElement, cursor: number) {
-      if (maskMarked === void 0) return;
+      if (maskMarked === undefined) return;
 
       const noMarkBefore = maskMarked.slice(cursor - 1).indexOf(MARKER) === -1;
       let i = Math.max(0, cursor - 1);
@@ -380,7 +380,7 @@ export const useMask = (
 
       if (
         i < 0 &&
-        maskMarked[cursor] !== void 0 &&
+        maskMarked[cursor] !== undefined &&
         maskMarked[cursor] !== MARKER
       ) {
         return moveCursor.right(inp, 0);
@@ -390,7 +390,7 @@ export const useMask = (
     },
 
     right(inp: HTMLInputElement, cursor: number) {
-      if (maskMarked === void 0) return;
+      if (maskMarked === undefined) return;
 
       const limit = inp.value.length;
       let i = Math.min(limit, cursor + 1);
@@ -406,7 +406,7 @@ export const useMask = (
 
       if (
         i > limit &&
-        maskMarked[cursor - 1] !== void 0 &&
+        maskMarked[cursor - 1] !== undefined &&
         maskMarked[cursor - 1] !== MARKER
       ) {
         return moveCursor.left(inp, limit);
@@ -433,7 +433,7 @@ export const useMask = (
 
       if (
         i < 0 &&
-        localMaskMarked[cursor] !== void 0 &&
+        localMaskMarked[cursor] !== undefined &&
         localMaskMarked[cursor] !== MARKER
       ) {
         return moveCursor.rightReverse(inp, 0);
@@ -459,7 +459,7 @@ export const useMask = (
 
       if (
         i > limit &&
-        localMaskMarked[cursor - 1] !== void 0 &&
+        localMaskMarked[cursor - 1] !== undefined &&
         localMaskMarked[cursor - 1] !== MARKER
       ) {
         return moveCursor.leftReverse(inp, limit);
@@ -484,12 +484,12 @@ export const useMask = (
       end = inp.selectionEnd ?? 0;
 
     if (!e.shiftKey) {
-      selectionAnchor = void 0;
+      selectionAnchor = undefined;
     }
 
     if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
       // Left / Right
-      if (e.shiftKey && selectionAnchor === void 0) {
+      if (e.shiftKey && selectionAnchor === undefined) {
         selectionAnchor = inp.selectionDirection === 'forward' ? start : end;
       }
 

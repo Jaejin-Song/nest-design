@@ -66,7 +66,7 @@ const onInput = (e: Event) => {
     if (isTypeText.value === true && e.target === document.activeElement) {
       const { selectionStart, selectionEnd } = eventTarget;
 
-      if (selectionStart !== void 0 && selectionEnd !== void 0) {
+      if (selectionStart !== undefined && selectionEnd !== undefined) {
         nextTick(() => {
           if (
             e.target === document.activeElement &&
@@ -88,10 +88,10 @@ function emitValue(val: string | number) {
       emit('update:modelValue', val);
     }
 
-    emitValueFn = void 0;
+    emitValueFn = undefined;
   };
 
-  if (props.debounce !== void 0) {
+  if (props.debounce !== undefined) {
     emitTimer !== null && clearTimeout(emitTimer);
     emitTimer = setTimeout(emitValueFn, props.debounce);
   } else {
@@ -102,7 +102,7 @@ function emitValue(val: string | number) {
 // function getCurValue() {
 //   return temp.hasOwnProperty('value') === true
 //     ? temp.value
-//     : innerValue.value !== void 0
+//     : innerValue.value !== undefined
 //       ? innerValue.value
 //       : '';
 // }
@@ -114,8 +114,8 @@ const onChange = (e: Event) => {
 const inputAttrs = computed(() => {
   const attrs = {
     type: props.type,
-    // 'data-autofocus': props.autofocus === true || void 0,
-    // rows: props.type === 'textarea' ? 6 : void 0,
+    // 'data-autofocus': props.autofocus === true || undefined,
+    // rows: props.type === 'textarea' ? 6 : undefined,
     // 'aria-label': props.label,
     // name: nameProp.value,
     // ...state.splitAttrs.attributes.value,
@@ -144,7 +144,7 @@ const blur = () => {
   }
 };
 
-const select = () => inputRef.value !== void 0 && inputRef.value.select();
+const select = () => inputRef.value !== undefined && inputRef.value.select();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- 필요하면 추후에 오픈함
 const nativeEl = () => inputRef.value;

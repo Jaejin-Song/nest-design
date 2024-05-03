@@ -60,7 +60,7 @@ const innerClass = computed(() => {
 });
 
 const onClick = (e: Event) => {
-  if (e !== void 0) {
+  if (e !== undefined) {
     e.stopPropagation();
   }
 
@@ -120,7 +120,7 @@ const formAttrs = computed(() => {
     // dom property
     '.checked': isTrue.value,
     // dom attribute
-    '^checked': isTrue.value === true ? true : void 0,
+    '^checked': isTrue.value === true ? true : undefined,
     name: props.name,
     value: modelIsArray.value === true ? props.value : props.trueValue,
   };
