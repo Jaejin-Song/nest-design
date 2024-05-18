@@ -29,7 +29,8 @@ type TokenDef = {
 
 const TOKEN_KEYS = ['#', 'S', 'N', 'A', 'a', 'X', 'x'] as const;
 
-type TokensDef = Record<(typeof TOKEN_KEYS)[number], TokenDef>;
+type TOKEN_KEY = (typeof TOKEN_KEYS)[number];
+type TokensDef = Record<TOKEN_KEY, TokenDef>;
 
 const TOKENS: TokensDef = {
   '#': { pattern: '[\\d]', negate: '[^\\d]' },
@@ -64,16 +65,24 @@ TOKEN_KEYS.forEach((key) => {
   TOKENS[key].regex = new RegExp(TOKENS[key].pattern);
 });
 
-// TOKEN_KEYS 다른 변수를 사용하여 특정 문자들을 포함한 정규 표현식을 생성
+// \\\\             - 두 개의 백슬래시 (\\)
+// (               - 그룹 시작
+//   [^.*+?^\${}()|([\\]])  - [.*+?^${}()|[\] 이외의 문자 (문자 클래스에 ^가 있는 것은 부정을 의미), 정규식에서 의미를 갖는 값들
+//   |               - 또는
+//   ([.*+?^\${}()|[\\]])  - [.*+?^${}()|[\\] 중 하나의 문자
+//   |               - 또는
+//   ([#AS])         - #, A, 또는 S 중 하나의 문자
+//   |               - 또는
+//   (.)             - 어떤 문자 (위의 모든 조건에 맞지 않는 경우)
+// )               - 그룹 끝
 const tokenRegexMask = new RegExp(
-    '\\\\([^.*+?^${}()|([\\]])|([.*+?^${}()|[\\]])|([' +
-      TOKEN_KEYS.join('') +
-      '])|(.)',
+    `\\\\([^.*+?^\${}()|([\\]])|([.*+?^\${}()|[\\]])|([${  TOKEN_KEYS.join('')  }])|(.)`,
     'g',
   ),
+  //  문자열에서 이스케이프해야 하는 문자 찾기
   escRegex = /[.*+?^${}()|[\]\\]/g;
 
-// '\x01'
+// '\x01', 사용자가 입력할 수 없는 문자
 const MARKER = String.fromCharCode(1);
 
 export const useMask = (
@@ -130,10 +139,12 @@ export const useMask = (
       return;
     }
 
+    // localComputedMask = '###-###'
     const localComputedMask =
         NAMED_MASKS[props.mask] === undefined
           ? props.mask
           : NAMED_MASKS[props.mask],
+    // fillMask가 존재할 때 한글자만 잘라서 사용
       fillChar =
         typeof props.fillMask === 'string' && props.fillMask.length !== 0
           ? props.fillMask.slice(0, 1)
@@ -232,8 +243,7 @@ export const useMask = (
     const inp = inputRef.value;
     if (inp === undefined) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const end = inp.selectionEnd ?? 0,
+    const end = inp.selectionEnd,
       unmasked = unmaskValue(rawVal);
 
     // Update here so unmask uses the original fillChar
@@ -243,17 +253,14 @@ export const useMask = (
       masked = props.fillMask !== false ? fillWithMask(preMasked) : preMasked,
       changed = innerValue.value !== masked;
 
-    console.log('rawVal :>> ', rawVal);
-    console.log('unmasked :>> ', unmasked);
-    console.log('preMasked :>> ', preMasked);
-    console.log('masked :>> ', masked);
-
     inp.value !== masked && (inp.value = masked);
 
     changed === true && (innerValue.value = masked);
 
     document.activeElement === inp &&
       nextTick(() => {
+        // fill-mask = true일 때, 값을 다 지우면
+        // 커서가 맨 뒤로 가는 걸 방지하는 로직
         if (masked === maskReplaced) {
           inp.setSelectionRange(0, 0, 'forward');
 
@@ -274,7 +281,7 @@ export const useMask = (
         //   moveCursor.right(inp, cursor);
         // }
 
-        const cursor = end - 1;
+        const cursor =  end === null ? 0 : end - 1;
         moveCursor.right(inp, cursor);
       });
 
@@ -331,7 +338,9 @@ export const useMask = (
 
   function fillWithMask(val: string) {
     if (maskReplaced === undefined) return val;
-
+    
+    // 길이가 같으면 mask 처리를 할 필요가 없음
+    // 근데 음수가 되는 경우가 있는지가 의문
     if (maskReplaced.length - val.length <= 0) {
       return val;
     }
@@ -339,6 +348,7 @@ export const useMask = (
     return val + maskReplaced.slice(val.length);
   }
 
+  // moveCursor에서 사용하는 함수
   function getPaddedMaskMarked(size: number) {
     // 타입가드를 위한 예외처리지만 ''을 return하는게 올바른 액션은 아님.
     if (maskMarked === undefined) return '';
